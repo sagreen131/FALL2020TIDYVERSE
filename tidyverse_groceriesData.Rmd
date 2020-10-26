@@ -2,9 +2,10 @@
 title: "Tidyverse CREATE Assignment: Groceries Data"
 author: "DH Kim"
 date: "`r Sys.Date()`"
-output: html_document
+output: pdf_document
 ---
 
+This Assignment uses `readr`, `dplyr', `stringr`, and `ggplot2` to do the following data work. 
 ```{r load-packages, message=FALSE}
 # libraries in Tidyverse
 library(readr)
