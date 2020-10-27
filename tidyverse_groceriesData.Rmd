@@ -1,11 +1,16 @@
 ---
-title: "Tidyverse CREATE Assignment: Groceries Data"
+title: "Tidyverse with Groceries Data"
 author: "DH Kim"
-date: "`r Sys.Date()`"
-output: pdf_document
+output:
+  rmarkdown::html_vignette:
+vignette: >
+  %\VignetteIndexEntry{Tidyverse with Groceries Data}  
+  %\VignetteEngine{knitr::rmarkdown} 
+  %\usepackage[utf8]{inputenc}
 ---
 
-This Assignment uses `readr`, `dplyr', `stringr`, and `ggplot2` to do the following data work. 
+This document shows some data work with the `readr`, `dplyr`, `stringr`, and `ggplot2` libraries in tidyverse, focusing on how to use functions. The dataset used comes from [Kaggle Groceries dataset](https://www.kaggle.com/heeraldedhia/groceries-dataset). 
+
 ```{r load-packages, message=FALSE}
 # libraries in Tidyverse
 library(readr)
@@ -14,17 +19,57 @@ library(stringr)
 library(ggplot2)
 ```
 
+### Importing data with readr::read_*()
+
+It shows how to use the `read_csv()` function in the readr library and its, which is different from the built-in `read.csv()` function. The R documentation for read_csv() is [here](https://readr.tidyverse.org/reference/read_delim.html) and the one for read.csv() is [here](https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/read.table).
 ```{r code-chunk-label}
 groceries <- 
-  read.csv(url("https://raw.githubusercontent.com/HwanKim2/data_repo/main/Groceries_dataset.csv"))
+  read_csv(url("https://raw.githubusercontent.com/HwanKim2/data_repo/main/Groceries_dataset.csv"))
 glimpse(groceries)
 ```
+
+The resulting data frame is *groceries*. Some variants are as follows. The first one explicitly writes down the default options in the function.
+```{r}
+gro_varOne <- readr::read_csv(
+  url("https://raw.githubusercontent.com/HwanKim2/data_repo/main/Groceries_dataset.csv"),
+  col_names = TRUE, col_types = NULL)
+glimpse(gro_varOne)
+identical(groceries, gro_varOne)
+```
+
+It shows how to explicitly specify the `col_types` option.
+```{r}
+gro_wayTwo <- 
+  read_csv(
+    url("https://raw.githubusercontent.com/HwanKim2/data_repo/main/Groceries_dataset.csv"),
+       col_types = cols(
+                   Member_number = col_double(),
+                   Date = col_character(),
+                   itemDescription = col_character()
+                   )
+          )
+identical(groceries, gro_wayTwo)
+```
+For more, you may refer to [other read_csv() vignette](https://github.com/palmorezm/FALL2020TIDYVERSE/blob/Zach_Vignette/Tidyverse_Vignette.Rmd).
+
+### Counting observations by group with count()
 
 ```{r}
 item_count <- groceries %>%
   dplyr::count(itemDescription) %>%
   arrange(desc(n))
 item_count[1:10,]
+```
+The above data work is simplified with the sort option.
+```{r}
+item_count_varOne <- groceries %>%
+  dplyr::count(itemDescription, sort = TRUE)
+item_count_varOne[1:10,]
+identical(item_count, item_count_varOne)
+```
+
+### Plotting with ggplot()
+```{r}
 ggplot(item_count[1:10,], 
        aes(x=reorder(itemDescription, -n), y = n)) +
 geom_bar(stat="identity") +
