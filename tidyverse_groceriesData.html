@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="DH Kim" />
+
+
+<title>Tidyverse with Groceries Data</title>
+
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Tidyverse with Groceries Data</h1>
+<h4 class="author">DH Kim</h4>
+
+
+
+<p>This document shows some data work with the <code>readr</code>, <code>dplyr</code>, <code>stringr</code>, and <code>ggplot2</code> libraries in tidyverse, focusing on how to use functions. The dataset used comes from <a href="https://www.kaggle.com/heeraldedhia/groceries-dataset">Kaggle Groceries dataset</a>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># libraries in Tidyverse</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(readr)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(dplyr)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>(stringr)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">library</span>(ggplot2)</span></code></pre></div>
+<div id="importing-data-with-readrread_" class="section level3">
+<h3>Importing data with readr::read_*()</h3>
+<p>It shows how to use the <code>read_csv()</code> function in the readr library and its, which is different from the built-in <code>read.csv()</code> function. The R documentation for read_csv() is <a href="https://readr.tidyverse.org/reference/read_delim.html">here</a> and the one for read.csv() is <a href="https://www.rdocumentation.org/packages/utils/versions/3.6.2/topics/read.table">here</a>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>groceries &lt;-<span class="st"> </span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="st">  </span><span class="kw">read_csv</span>(<span class="kw">url</span>(<span class="st">&quot;https://raw.githubusercontent.com/HwanKim2/data_repo/main/Groceries_dataset.csv&quot;</span>))</span></code></pre></div>
+<pre><code>## Parsed with column specification:
+## cols(
+##   Member_number = col_double(),
+##   Date = col_character(),
+##   itemDescription = col_character()
+## )</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">glimpse</span>(groceries)</span></code></pre></div>
+<pre><code>## Rows: 38,765
+## Columns: 3
+## $ Member_number   &lt;dbl&gt; 1808, 2552, 2300, 1187, 3037, 4941, 4501, 3803, 276...
+## $ Date            &lt;chr&gt; &quot;21-07-2015&quot;, &quot;05-01-2015&quot;, &quot;19-09-2015&quot;, &quot;12-12-20...
+## $ itemDescription &lt;chr&gt; &quot;tropical fruit&quot;, &quot;whole milk&quot;, &quot;pip fruit&quot;, &quot;other...</code></pre>
+<p>The resulting data frame is <em>groceries</em>. Some variants are as follows. The first one explicitly writes down the default options in the function.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>gro_varOne &lt;-<span class="st"> </span>readr<span class="op">::</span><span class="kw">read_csv</span>(</span>
+<span id="cb6-2"><a href="#cb6-2"></a>  <span class="kw">url</span>(<span class="st">&quot;https://raw.githubusercontent.com/HwanKim2/data_repo/main/Groceries_dataset.csv&quot;</span>),</span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="dt">col_names =</span> <span class="ot">TRUE</span>, <span class="dt">col_types =</span> <span class="ot">NULL</span>)</span></code></pre></div>
+<pre><code>## Parsed with column specification:
+## cols(
+##   Member_number = col_double(),
+##   Date = col_character(),
+##   itemDescription = col_character()
+## )</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">glimpse</span>(gro_varOne)</span></code></pre></div>
+<pre><code>## Rows: 38,765
+## Columns: 3
+## $ Member_number   &lt;dbl&gt; 1808, 2552, 2300, 1187, 3037, 4941, 4501, 3803, 276...
+## $ Date            &lt;chr&gt; &quot;21-07-2015&quot;, &quot;05-01-2015&quot;, &quot;19-09-2015&quot;, &quot;12-12-20...
+## $ itemDescription &lt;chr&gt; &quot;tropical fruit&quot;, &quot;whole milk&quot;, &quot;pip fruit&quot;, &quot;other...</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">identical</span>(groceries, gro_varOne)</span></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<p>It shows how to explicitly specify the <code>col_types</code> option.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>gro_wayTwo &lt;-<span class="st"> </span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="st">  </span><span class="kw">read_csv</span>(</span>
+<span id="cb12-3"><a href="#cb12-3"></a>    <span class="kw">url</span>(<span class="st">&quot;https://raw.githubusercontent.com/HwanKim2/data_repo/main/Groceries_dataset.csv&quot;</span>),</span>
+<span id="cb12-4"><a href="#cb12-4"></a>       <span class="dt">col_types =</span> <span class="kw">cols</span>(</span>
+<span id="cb12-5"><a href="#cb12-5"></a>                   <span class="dt">Member_number =</span> <span class="kw">col_double</span>(),</span>
+<span id="cb12-6"><a href="#cb12-6"></a>                   <span class="dt">Date =</span> <span class="kw">col_character</span>(),</span>
+<span id="cb12-7"><a href="#cb12-7"></a>                   <span class="dt">itemDescription =</span> <span class="kw">col_character</span>()</span>
+<span id="cb12-8"><a href="#cb12-8"></a>                   )</span>
+<span id="cb12-9"><a href="#cb12-9"></a>          )</span>
+<span id="cb12-10"><a href="#cb12-10"></a><span class="kw">identical</span>(groceries, gro_wayTwo)</span></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<p>For more, you may refer to <a href="https://github.com/palmorezm/FALL2020TIDYVERSE/blob/Zach_Vignette/Tidyverse_Vignette.Rmd">other read_csv() vignette</a>.</p>
+</div>
+<div id="counting-observations-by-group-with-count" class="section level3">
+<h3>Counting observations by group with count()</h3>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>item_count &lt;-<span class="st"> </span>groceries <span class="op">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">count</span>(itemDescription) <span class="op">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(n))</span>
+<span id="cb14-4"><a href="#cb14-4"></a>item_count[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,]</span></code></pre></div>
+<pre><code>## # A tibble: 10 x 2
+##    itemDescription      n
+##    &lt;chr&gt;            &lt;int&gt;
+##  1 whole milk        2502
+##  2 other vegetables  1898
+##  3 rolls/buns        1716
+##  4 soda              1514
+##  5 yogurt            1334
+##  6 root vegetables   1071
+##  7 tropical fruit    1032
+##  8 bottled water      933
+##  9 sausage            924
+## 10 citrus fruit       812</code></pre>
+<p>The above data work is simplified with the sort option.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>item_count_varOne &lt;-<span class="st"> </span>groceries <span class="op">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">count</span>(itemDescription, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb16-3"><a href="#cb16-3"></a>item_count_varOne[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,]</span></code></pre></div>
+<pre><code>## # A tibble: 10 x 2
+##    itemDescription      n
+##    &lt;chr&gt;            &lt;int&gt;
+##  1 whole milk        2502
+##  2 other vegetables  1898
+##  3 rolls/buns        1716
+##  4 soda              1514
+##  5 yogurt            1334
+##  6 root vegetables   1071
+##  7 tropical fruit    1032
+##  8 bottled water      933
+##  9 sausage            924
+## 10 citrus fruit       812</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">identical</span>(item_count, item_count_varOne)</span></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+</div>
+<div id="plotting-with-ggplot" class="section level3">
+<h3>Plotting with ggplot()</h3>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">ggplot</span>(item_count[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,], </span>
+<span id="cb20-2"><a href="#cb20-2"></a>       <span class="kw">aes</span>(<span class="dt">x=</span><span class="kw">reorder</span>(itemDescription, <span class="op">-</span>n), <span class="dt">y =</span> n)) <span class="op">+</span></span>
+<span id="cb20-3"><a href="#cb20-3"></a><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>) <span class="op">+</span></span>
+<span id="cb20-4"><a href="#cb20-4"></a><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;quantity sold&quot;</span>) <span class="op">+</span></span>
+<span id="cb20-5"><a href="#cb20-5"></a><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">45</span>, <span class="dt">vjust =</span> <span class="fl">0.5</span>, <span class="dt">hjust=</span><span class="dv">1</span>))</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAABFFBMVEUAAAAAADoAAGYAOpAAZrYzMzM6AAA6kNtNTU1NTW5NTY5Nbm5Nbo5NbqtNjo5NjqtNjshZWVlmAABmADpmtv9uTU1uTW5uTY5ubo5ubqtuq6tuq8huq+SOTU2OTW6OTY6Obk2Obm6Ojk2Ojm6Ojo6OjsiOq6uOyMiOyOSOyP+QOgCQ2/+rbk2rbm6rbo6rjm6rjo6rjqurq46rq8iryKuryMir5Mir5P+2ZgC2///Ijk3Ijm7Iq47Iq6vIyI7IyOTI5KvI5P/I/8jI/+TI///bkDrb///kq27kq47kyI7k5Kvk5Mjk5OTk5P/k/+Tk///r6+v/tmb/yI7/yKv/25D/5Kv/5Mj//7b//8j//9v//+T///9nyA46AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAOh0lEQVR4nO2dD3sUtxGH3ZaGNamLS2tIwA60tKVLD9qGtKYHDUlj90hLYrPJwbH7/b9HNZJ2byWNdqT9d3fe+T1PHsdiV9p7V5oZjXTyXsFq1N6mH2DbxYAIMSBCDIgQAyLEgAh1AnRZl/lbY+nGLw2ogAERhQyIKGRARCEDIgoDAC2PkiQtikWSJDfOitVJcnBRlD8YkEDx2WmxvH1azFP4LZ+lxeKw/MGAhDLgME/zJ6cS1/2zYnnnTP9gQOteJMYUjLTlpxfwm/4h/unnQuLHrxA1VrlragSUz47lKBO9KDuQZPQP/e8CNAaoz3e91T1odXKs/2+eOj2IAQkvlpb/O099NmjCgDQfGFT50zMYbdKLHZtebMKAIP4B8yx+7p8WvjhowoACdMmAGBAD8hQyIKKQARGFDIgoZEBEIQMiChkQUciAiMJeABVTzwdRuuQexIAYkKeQARGFDIgoZEBEIQMiChkQUciAiEIGRBQyIKKQARGFAYD0/iBzQYzXxSrp/UHmxiBnf9CEAWVqf5C5KM9r804vMrd18P4gQ7BVwdwYxPuD6pL7g3w9iAHp/S9sg5r5FObGIN4ftFa5P4jjoPa69AFqQ23bAb2/tVfqp/9kQHgPOgc072/9hnsQDkijecs96JIBkYUYoHKIXQ/kMz1AxVuw0cEmaIKAInXJgBgQx0Gewl56UOHLB6GFuykeYp5CHNA5jLBgLx8JCL+0v0+983HQ7gMaOJJmQFceEA+x+i8YIDbStV9QQJG6ZEAMyAAkrLSYcQTb6OkBen4N7PT5NQbkdfMfHl9jN69+wQGBj18DkmuozecHTQrQh8fX3/7kzzDQlDIAQ5wfNClAxY8f7V0rnv/sP+q3+f4XogcR5wd1BtSG2ta4eUDR6vyg0MIdSB2RgFqdHxRaeBV6kFTs+UETBMQ2yAeo1flBUwLU6vygKwro/S0RBcVoaoDEZGxvr4yCGBAGSK0fjppR3DVAClHgdHWKgM73xGxjPd3YFKA22EYA9OGx3vwSmPGYGqD3t8KTiRMFtIF1MQZ0ZQCdV/uDRs1J7w6gqB3SlbBP3UM+CC/dhDa+LoYWbmMPUmtiQ27B23FA3IPYizGgYQGxm+/fzU8NULQmB+jHj9jNNwGCrR3cgxoAbbsNwisYEdCHxxYguezT5mvhVxSQHQHJ7S+tjscZE1AztZ6HmDEXU9tfWh1NcUUBOZK7O9ocjxNaGJfuiKmgNwWtzUcfjxNauGs9yI6DmnrQFAF9eHxdOLKas1+yDXLioOfXi7fVqiGgaHU8zhUGdH7N3ga87XFQ57bCAcEGYEHnPHiDx+QACSNUPN8L3yQ0OUCxYkAMqGmqwYDwHvT+12yDmofY24l5Mby0CdDEhhhe2gAocP/dBAFpIz21OAgvbehBUcKeZAvyQZ3bqsRxUPwQCw+FpgaogG+sjn12R8RDj9nWTu7uGLMtBkS0tT3H40Q89JhtNR2PM9RJnJ0fesy2ON1BtMWAiLYYENEWAyLaYkBEWxGABj4eJ+Khx2wrAtDAx+NEPPSYbYUD2szxOF0r6NxWOKDNHI/TtYLObVUiAW3meJyuFXRuK9KLjX48TtcKOrcVDYhtkE+bOR6nawWd24qLg8Y/HqdrBZ3b4kiaaIsBEW0xIKItBkS0xYCIthgQ0RYDItpiQERbDIhoiwERbfH+IKKtStyDeIi1aosBEW0xIKItBkS0xYCIthgQ0RYDItpiQERbDIhoiwERbTEgoq3WgHhdrFm8P4jqQLw23yxnf9CVVyQgZ3/QWm1PEdnEpcMdNOnsDxr6o+waIMcGDf1Rdg2Qsz9o6I+ya4CcOGjoj7JzgAyN8FEY0EYuHQuQITwqQks3fmlEBQyIKGRARCEDIgr7A3RFxYAIMSBCDIgQAyLEgAgxIEIMiBADIsSACDEgQgyIEAMixIAIMSBCDIgQAyLEgAgxIEIMiBADIsSACDEgQgyIEAMixIAIMSBCDIgQAyLEgAgxIEIMiBADIsSACDEgQgyIEAMitN2A8ldDXBp1f1+A8mc9VWRoeXTvySl9WcOlwc/la6oPQFkq/jvE/iWfJcdhhR6tTu59F1ABPIHn0htnTqEr7/29ABLPmxYZ9plXJ2lgoTw63y3PTx6dOBW7FeSzg4tigVyaP/kE4QNtGe/Te3/RB6AfTossSVFAi2Ogt/5+madQ1ABfN88cQvD+V85jY7XC/YV76buXGHVxrX2p5/6iB0D5bB8I/T5JEqcPwN8sOZRtNxVCDWKEru5/ad2v3v/q5KZZA1Zr/jpJkUsLhDp871Z0woUBw3t/Z0Bi9GaSELT35o31rws47922fW5htv/FnW9mqegXRs/X7391cviGqAD+bIP6hPVL5VCyCeWzP975txik80PyfqmOgOToVYQs9Hqgv6k/SWlo3liPN0tkH8qf1g0GIAiqtQCU+6fOtXoomeWiLdXT5yl1v1IPQyzFCOmnWx7VHc5cGRqzUNfw8ODC7PXw0EG1SmXGJ5RBDTqUZrL5xLLS9v01dQcEoxcIVfrhFH86ZVLcx4DDCkSx88wmd1+t5R/XMR5BBjVLdyiptpZHj+6fNd5fU0dAosun8Bnqbw+sdoE8nTKELiH1Pfz5vmVUzIf21lrkf30pLzMqkEHN3BlKqi0ZlzTfv1Y3QKLHZopQXfJzOU9XGkJXc/mnO76ph2nv3IfGahV3QigA/2RWIIMaaW+sbglwhb/U4aP3/rW6AVr9ATosSsh5OtQQgtE9+H6W3D0xrbYateZDu7WK/lCOW7OCQgc1q/pQki5CVnCsfWDT/aW6ABItwpsQhOx/kW/beDpdihhdcITr40BUaSJHrf3QTq357OZsX9a4PKrZJeUs7aCmjEXzv12Up2t47jfUBdA8lV6+dphHlmpHbJs8jyGEs1IKO5JUniZdP7S3VohbXJtWkrCCmnUs+vrz8hb0flPtAcl5oCK0LkrSOfQJp1nEpoAUWssraU9Ts/q+Wov5I+QTolE5tKVj0eVvq2dG7zfVAZB0SiYh0diNM3M6Wb5+16bApFw6JNPRIJ7GrVV5/cLtAyLYXCJRuUwAOLEocr+jLkNMVpz/62unrNYn1q/ftiny8zqmXP5BPMPTYLVqr69uMJ3+i8PCJaHYLuxYFLnfUScvhjol6Y3Lchk769dvGUI9Kf/vbdM+p3o2cLyebTm1yrbXhIxqwd47JFRbv3jgxKLu/ba6uXnEKWVGHA9W2Hn9SuhUX1vtP609DVaratsN7OS4lH8FzboWaSs0bdcOkJNyUtLmsU4N3nrmvH4pbKpfWe21p8FqVeUuoeUnD/b/8ZlVDG04beFpO0StACEpJzU9dM2jDFuwiRbIntULu6GttvY0vlpVqGMRyr+Tdx7ZTSkParWF5vIwxQLyzRl1ztt1FPIq3E/Yk3I4/8sKlT216lDHrHYujB30wMWndppVkDTbyp88xAY4pugzzHxzRpXztsyj+Lj3bMfaIDnAlreNkYDUioQ6yutnyaFt6vAIVXSqh1guD1H0EMNnonp6aJlHOdDx9Q5HsD7jvlGs1sIddZXXXyQuCnSqLj6GnXXDFW+D0Jko2IRf1q2SfKVqoCdBK1vC0RxcZKZRcGotS8UE3Bp1VR/5nz0ndyJU3akglAh4rhZGGpmJKqt9dz09VK9Ue9cAUyg1F5GKPb00aq1KsbGMpHPUrNWKUIn8j63YgyYhPfGtU7W22nfL6SEsBUlCgQO9VGb4FbtWub5XhkpGDy7zI6bKWasRoVL5H1txgHR64ls3KWhYbbUUJB84bKCvG6jTtH1BLXcADq8mlbV17AwyayXzP7biAHnTE7bVzjQhJL3erGrcYLWqpiEBiWVSkVyBZcpfVUtJ/vyPrUhASHpCprccq51VfShKi/IWvFaZQUAzqU7WFpm/q6iKyP/YirRBbnqiTG/Z+UN0sSxYvlpVlWYp2MWbdtbWnb/LvAtEVXFPFQhIZ3Xcd+qkt6pnxtxKsLBadVbRDg/1vMfM2rrzdzBgen9CFKEwQDqrI13CbXugOwspVdKibf/Ba31xamUVdViPrZXh83d30wKt0CGmsjoYe3MhBR7kGWrL4+TWOnOyimocY/OeAl3Af42k8kkF9qCnZxmy6ic7vbGQoj7JV1iqOVhoreWyYz2r+EoRQuY9UmaEAfH3l24qn1QgoBdY5rbss7mR3oJAA0s1hwqtFWSnlaRTEoWYVyvsXIHqzy28RuAQAxPorhlXo7+W3pKBhueZg4TWqiL4eqWi/0inBNgcX4fWCi/v82hCAYDKRKZFKH/6VTn6awsphb7MtuWhwmtFInjRf07ugckN6xVY/B2kkB6EJjKLdw+OPaO/ffjjq7W0+vWaof9EOCUk/g4SCciXyIRY5XvPSOpCCKs1/0tp9WvBuQxqwp1S21FPAsITmeBBpDWlR3+EPLUKv/g7zOqvJKFgp9TuWQOGGJLIhDjssMhCEz2hcmuVyIRftN+/NNoX0UFNCwV5MSeRCZonNyMyPaGyagVX/veXjtWvdoVEBjUtFOjmjURmub1/0daTu6p9U2Jh5XLBlSMBRtdQPVQtUq6B2/uj5P1Shppf2oTQXSHDKB4Qvr2/qzzflCj02rmz76VDqB6neEDo9v7O8nxTAlQzxdVWqi6hepzaLD13CXNwwaf+2JsFrUxxbStV61A9Vi1WNchda9FSTunjI9ppI1upBlb8qgbYhJ4Jaaf0KMBpe/bSDKfoVQ0ke9dZMU7Js5dmMMWuaqDZu86KcUq+vTQDKXZVw5O9a69yK3n4p+7fRzQpDFC5qNG/ey0nDWM5pWgFAaotavQ8fx9z0tBOYYBe+Rc1Oil/NuKkoZ2CAImZ0gz/KlM3waxuvElDO4XZIDFTet2/aZSzuvEmDe0UBghmSv07j3KnxbbaZ6lQN+98O7YXjeuxWykA0JDpze0nRAMaNr259YRoQFsfqQyrAEDbHqkMq/8DUg6L4Ov80AUAAAAASUVORK5CYII=" /><!-- --></p>
+<p> </p>
+<p> </p>
+<p> </p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
