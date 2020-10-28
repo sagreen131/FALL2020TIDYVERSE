@@ -1,0 +1,93 @@
+---
+title: "TidyVerse CREATE"
+author: "Arushi Arora"
+date: "10/23/2020"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introdction
+The following example from Five Thirty Eight https://fivethirtyeight.com/features/how-americans-like-their-steak/
+
+The core tidyverse package includes "readr" and "dplyr"
+"readr" provides a fast and friendly way to read rectangular data
+"dplyr" provides a grammar of data manipulation, providing a consistent set of verbs that solve the most common data manipulation 
+
+#### Importing libraries
+```{r warning=FALSE}
+if(!require('tidyverse'))install.packages('tidyverse')
+library (tidyverse)
+library(dplyr, warn.conflicts = FALSE) # for cleaning the data
+options(dplyr.summarise.inform = FALSE)
+```
+
+
+```{r warning=FALSE}
+urlfile="https://raw.githubusercontent.com/fivethirtyeight/data/master/steak-survey/steak-risk-survey.csv"
+
+steakdata<- readr::read_csv(url(urlfile))
+
+head(steakdata)
+```
+
+## Rename columns
+
+```{r warning=FALSE}
+steakdata1 = dplyr::rename(steakdata, 
+"lottery" = "Consider the following hypothetical situations: <br>In Lottery A, you have a 50% chance of success, with a payout of $100. <br>In Lottery B, you have a 90% chance of success, with a payout of $20. <br><br>Assuming you have $10 to bet, would you play Lottery A or Lottery B?", 
+"smoke_cigs" = "Do you ever smoke cigarettes?" ,
+"drink_alcohol" = "Do you ever drink alcohol?", 
+"gamble" = "Do you ever gamble?",
+"skydiving" = "Have you ever been skydiving?",
+"overspeeding" = "Do you ever drive above the speed limit?",
+"cheat_patner" = "Have you ever cheated on your significant other?",
+"eat_steak" = "Do you eat steak?",
+"steak_prep" = "How do you like your steak prepared?",
+"hh_income" = "Household Income",
+"location" = "Location (Census Region)")
+head(steakdata1)
+```
+
+## Remove first row
+
+```{r warning=FALSE}
+steakdata2 <- steakdata1[-c(1), ]
+
+head(steakdata2)
+```
+
+## Mutate Char variables to Factor
+
+```{r warning=FALSE}
+steakdata3 <- steakdata2 %>% as_tibble() 
+
+steakdata4 <- steakdata3 %>%
+  mutate(lottery = as.factor(lottery)) %>%
+  mutate(smoke_cigs = as.factor(smoke_cigs)) %>%
+  mutate(drink_alcohol = as.factor(drink_alcohol)) %>%
+  mutate(gamble = as.factor(gamble)) %>%
+  mutate(skydiving = as.factor(skydiving)) %>%
+  mutate(overspeeding = as.factor(overspeeding)) %>%
+  mutate(cheat_patner = as.factor(cheat_patner)) %>%
+  mutate(eat_steak = as.factor(eat_steak)) %>%
+  mutate(steak_prep = as.factor(steak_prep)) %>%
+  mutate(Gender = as.factor(Gender)) %>%
+  mutate(Age = as.factor(Age)) %>%
+  mutate(hh_income = as.factor(hh_income)) %>%
+  mutate(Education = as.factor(Education)) %>%
+  mutate(location = as.factor(location))
+
+  head(steakdata4)
+```
+
+
+
+
