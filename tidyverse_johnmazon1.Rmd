@@ -1,0 +1,127 @@
+---
+title: "TidyVerse Assignment"
+author: "John Mazon"
+date: "10/25/2020"
+output: html_document
+---
+### Loading the librarys
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+##library(tidyverse) - will load the core tidyverse packages
+## can be loaded separate (corrected typo here)
+#Similarly to readr , dplyr and tidyr are also part of the tidyverse. These packages were loaded in R's memory when we called library(tidyverse)
+
+library(readr)
+#for data import
+
+library(ggplot2)
+#for data visualization (corrected typo here)
+
+library(dplyr)
+#for data manipulation
+
+library(tidyr)
+#for data tidying
+
+library(tibble)
+#for tibbles, a modern re-imagining of data frames
+```
+
+## Task at Hand
+In this assignment, you’ll practice collaborating around a code project with GitHub.  You could consider our collective work as building out a book of examples on how to use TidyVerse functions.
+Your task here is to Create an Example.  Using one or more TidyVerse packages, and any dataset from fivethirtyeight.com or Kaggle, create a programming sample “vignette” that demonstrates how to use one or more of the capabilities of the selected TidyVerse package with your selected dataset. 
+
+Additionally, we will internally work for the purpose of demonstration to 
+and show a graphic of correlation between clarity variable and depth variable
+
+
+## Data Sources and Background
+Dataset found in Kaggle site:
+This dataset contains the prices and various attributes of almost 54,000 diamonds. Specifically, it is a data frame with 53940 rows and 10 variables. Some characteristics specified for each row are price[in U.S Dollars], carat, cut quality, color, clarity, total depth percentage and table.  
+
+https://www.kaggle.com/shivam2503/diamonds
+
+
+GitHub repository to be utilized: 
+https://github.com/acatlin/FALL2020TIDYVERSE
+
+
+# Vignette
+
+## Functionality #1 - Reading in the data using readr
+
+Although standard R has the ability to load csv files, using the read.csv() function, we’ll use the functions in the readr Tidyverse package to load this data.
+
+```{r}
+#use read_csv function from readr to import csv file
+diamond_data <- read_csv("https://raw.githubusercontent.com/johnm1990/DATA607/master/diamonds.csv")
+#as_tibble() turns an existing object, such as a data frame or matrix, into a so-called tibble, a data frame with class tbl_df . 
+diamond_data <- as_tibble(diamond_data)
+head(diamond_data)
+
+```
+
+## Functionality #2 - slice
+
+'slice()' lets you index rows by their (integer) locations. It allows you to select, remove, and duplicate rows. It is accompanied by a number of helpers for common use cases
+```{r}
+#
+slice(diamond_data, 1:8)
+
+
+#select the first or last rows.
+slice_head(diamond_data)
+slice_tail(diamond_data)
+
+#randomly selects rows
+slice_sample(diamond_data)
+
+```
+
+Very good usage of the slice() function here! (Shana Green)
+
+## Functionality #3 - mutate
+mutate() adds new variables and preserves existing ones; 
+
+Here using we could depict a ratio of price to depth and include the result in a new column 'Ratio'
+```{r}
+
+diamond_data %>% select(price, depth) %>% mutate(Ratio = price/depth)
+
+
+```
+
+
+
+## Functionality #4 - select
+select() is used to take a subset of a data frame by columns.
+Below we use this function to take a subset of only included values clarity and depth. The rest of the **unneeded**  variables **can** be removed
+```{r}
+diamond_data <- select(diamond_data, -X1, -z, -color, -cut, -carat, -price)
+
+diamond_data
+
+```
+
+I did not know that simply adding - to a column name in the select() function, deletes the column in the dataframe. (Shana Green)
+
+
+
+## Functionality #5 - Visualization - ggplot
+The point geom is used to create scatterplots. The scatterplot is most useful for displaying the relationship between two continuous variables.
+Below we use this function to see the amount correlation between clarity variable and depth variable
+
+```{r}
+
+# Basic barplot
+ggplot(diamond_data) +
+  geom_point(aes(clarity, depth))
+
+# Complex barplot  
+ggplot(diamond_data, aes(x=carat, y=price, color=clarity, shape=cut)) + geom_point()
+   
+
+```
+I noticed that your barplot needed some color. Instead of factoring in the clarity and depth, I focused on the carat weight versus the price. In addition to this, I changed the shape of the variables to indicate the cut quality. (Shana Green)
+
