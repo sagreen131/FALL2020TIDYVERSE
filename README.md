@@ -1,85 +1,117 @@
+### TEST
 
-# TidyVerse Recipe CREATE
 
-Name: Arushi Arora
-
-#### Introduction:
-The core tidyverse package includes "readr", "tidyr" and "dplyr"
-- `readr` provides a fast and friendly way to read rectangular data
-- `tidyr` provides a set of functions that help you get to tidy data. Tidy data is data with a consistent form: in brief, every variable goes in a column, and every column is a variable
-- `dplyr` provides a grammar of data manipulation, providing a consistent set of verbs that solve the most common data manipulation
-
-#### Approach:
-Read the csv for the article https://fivethirtyeight.com/features/how-americans-like-their-steak/ published on Five Thirty Eight from Github using `readr`. Rename all the variables using `dplyr` package and remove the first row with no real reponses. Mutate the variable type to factor using the function `mutate` for further analysis
- 
-#### Conclusion:
-The dataset was imported and cleaned using packages in TidyVerse
-
----
-
-#### SYNTAX
-- Import CSV from Github
-    ```
-    urlfile="https://raw.githubusercontent.com/fivethirtyeight/data/master/steak-survey/steak-risk-survey.csv"
-
-    steakdata<- readr::read_csv(url(urlfile))
-    ```
-
-- Rename variables
-
-    ```
-    steakdata1 = dplyr::rename(steakdata, 
-    "lottery" = "Consider the following hypothetical situations: <br>In Lottery A, you have a 50% chance of success, with a payout of $100. <br>In Lottery B, you have a 90% chance of success, with a payout of $20. <br><br>Assuming you have $10 to bet, would you play Lottery A or Lottery B?", 
-    "smoke_cigs" = "Do you ever smoke cigarettes?" ,
-    "drink_alcohol" = "Do you ever drink alcohol?", 
-    "gamble" = "Do you ever gamble?",
-    "skydiving" = "Have you ever been skydiving?",
-    "overspeeding" = "Do you ever drive above the speed limit?",
-    "cheat_patner" = "Have you ever cheated on your significant other?",
-    "eat_steak" = "Do you eat steak?",
-    "steak_prep" = "How do you like your steak prepared?",
-    "hh_income" = "Household Income",
-    "location" = "Location (Census Region)")
-    ```
-- Remove first row
-
-  ```
-    steakdata2 <- steakdata1[-c(1), ]
-  ```
-
-- Code for populating the tables from .csv file stored locally
-    ```
-    steakdata3 <- steakdata2 %>% as_tibble() 
-
-    steakdata4 <- steakdata3 %>%
-    mutate(lottery = as.factor(lottery)) %>%
-    mutate(smoke_cigs = as.factor(smoke_cigs)) %>%
-    mutate(drink_alcohol = as.factor(drink_alcohol)) %>%
-    mutate(gamble = as.factor(gamble)) %>%
-    mutate(skydiving = as.factor(skydiving)) %>%
-    mutate(overspeeding = as.factor(overspeeding)) %>%
-    mutate(cheat_patner = as.factor(cheat_patner)) %>%
-    mutate(eat_steak = as.factor(eat_steak)) %>%
-    mutate(steak_prep = as.factor(steak_prep)) %>%
-    mutate(Gender = as.factor(Gender)) %>%
-    mutate(Age = as.factor(Age)) %>%
-    mutate(hh_income = as.factor(hh_income)) %>%
-    mutate(Education = as.factor(Education)) %>%
-    mutate(location = as.factor(location))
-
-    ```
-=======
 # FALL2020TIDYVERSE
 CUNY DATA 607 TIDYVERSE Collaborative project
 
-John Mazon TidyVerse Create Assignment - 
-Analysis of Diamond clarity and depth correlation/frequency as well as ratio [pertaining to price to depth] using multiple TidyVerse functionalities 
-=======
+---
+title: "Tidyverse CREATE Assignment"
+author: "Shana Green"
+date: "10/25/2020"
+output: html_document
+---
 
-* Data Analysis of Grocery items sold using Groceries_dataset.csv
-=======
-Change Log:
-26 October: Added vignette w/ examples for purrr and forcats, Cameron Smith
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-=======
-Shana Green made changes to John Mazon's tidyverse_johnmazon.rmd file. Corrected typos and added an additional ggplot visualization.
+## Assignment
+
+In this assignment, you’ll practice collaborating around a code project with GitHub.  You could consider our collective work as building out a book of examples on how to use TidyVerse functions.
+
+[GitHub repository](https://github.com/acatlin/FALL2020TIDYVERSE)
+
+[FiveThirtyEight.com](https://data.fivethirtyeight.com/) datasets.
+
+[Kaggle datasets](https://www.kaggle.com/datasets)
+
+Your task here is to Create an Example.  Using one or more TidyVerse packages, and any dataset from fivethirtyeight.com or Kaggle, create a programming sample “vignette” that demonstrates how to use one or more of the capabilities of the selected TidyVerse package with your selected dataset. (25 points)
+
+Later (see next assignment below), you'll be asked to extend an existing vignette.  Using one of your classmate’s examples (as created above), you'll then extend his or her example with additional annotated code. (15 points)
+
+You should clone the provided repository.  Once you have code to submit, you should make a pull request on the shared repository.  You should also update the README.md file with your example.
+
+After you’ve created your vignette, please submit your GitHub handle name in the submission link provided below. 
+
+You should complete your submission on the schedule stated in the course syllabus.
+
+## Data
+
+The dataset I chose came from FiveThirtyEight.com article [We Watched 906 Foul Balls To Find Out Where The Most Dangerous Ones Land](https://fivethirtyeight.com/features/we-watched-906-foul-balls-to-find-out-where-the-most-dangerous-ones-land/). 
+
+
+```{r}
+library(tidyverse)
+```
+
+## Reading the Data from Github
+
+```{r}
+
+foul<-read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/foul-balls/foul-balls.csv", na.strings=c("NA", "NULL"))
+
+head(foul)
+```
+
+
+## Renaming Data Columns
+```{r}
+names(foul)<-c("Matchup","Game_Date", "Type_of_Hit","Exit_Velocity", "Predicted_Zone", "Camera_Zone", "Used_Zone")
+
+colnames(foul)
+```
+
+In order to have a general visualization of the designated zones, I attached a photo from the article [We Watched 906 Foul Balls To Find Out Where The Most Dangerous Ones Land](https://fivethirtyeight.com/features/we-watched-906-foul-balls-to-find-out-where-the-most-dangerous-ones-land/).
+
+![Generic Stadium Map](stadium map.png)
+
+
+## Dplyr
+
+I will use dplyr from the Tidyverse package.
+
+
+### filter()
+
+As a huge baseball fan, I wanted to filter out the outermost predicted zone and compare it to the exit velocity.
+
+```{r}
+
+foul %>%
+    filter(Predicted_Zone=="7"|Predicted_Zone=="6")
+```
+
+### arrange()
+
+Since this is a large data set, I wanted to take a look at the top 20 highest exit velocities. 
+
+```{r}
+foul %>%
+    arrange(desc(Exit_Velocity))%>%
+    head(20)
+
+```
+
+
+### summarise()
+
+I used the summarize function from dplyr to generate some statistics for the exit velocity. 
+
+```{r}
+foul_info<-na.omit(foul)
+```
+
+```{r}
+foul_sum <- group_by(foul_info, Type_of_Hit)
+```
+
+```{r}
+foul_sum <- summarise(foul_sum,Min=min(Exit_Velocity),Max = max(Exit_Velocity),Median=median(Exit_Velocity), Mean=round(mean(Exit_Velocity),1))
+
+```
+
+```{r}
+foul_sum<-as.data.frame(foul_sum)
+foul_sum
+
+```
