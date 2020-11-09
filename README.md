@@ -1,3 +1,38 @@
+### JOHN MAZON TIDYVERSE EXTEND PORTION UPDATING READ.ME ###
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Excellent analysis Shana. 10 out of 10 points
+
+
+### Very interesting dataset choice ###
+
+
+### Shana, nice use of the arrange and head function combo to get the top 20 highest exit velocities ###
+
+
+
+### Shana, I've extended your analysis results by adding/creating a tibble from foul_sum data frame and portraying the head, tail and glimpse values from respective functions  ###
+diamond_data <- as_tibble(foul_sum)
+head(foul_sum)
+tail(foul_sum)
+glimpse(foul_sum)
+
+### Shana, I've extended your analysis results by adding a GGPLOT bar chart of frequency of "Max" value for the Type of Hit. This is one of many graphical analysis available in tidyverse ###
+
+ggplot(foul_sum, aes(x=Type_of_Hit, y=Max)) + 
+  geom_bar(stat = "identity")
+
+
+
+### FINISH ###
+
+
+
+
+
+
 # FALL2020TIDYVERSE
 CUNY DATA 607 TIDYVERSE Collaborative project
 
