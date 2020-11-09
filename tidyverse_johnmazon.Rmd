@@ -9,14 +9,14 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ##library(tidyverse) - will load the core tidyverse packages
-## can be loaded seperate
+## can be loaded separate (corrected typo here)
 #Similarly to readr , dplyr and tidyr are also part of the tidyverse. These packages were loaded in R's memory when we called library(tidyverse)
 
 library(readr)
 #for data import
 
 library(ggplot2)
-#for data visualisation
+#for data visualization (corrected typo here)
 
 library(dplyr)
 #for data manipulation
@@ -79,6 +79,8 @@ slice_sample(diamond_data)
 
 ```
 
+Very good usage of the slice() function here! (Shana Green)
+
 ## Functionality #3 - mutate
 mutate() adds new variables and preserves existing ones; 
 
@@ -91,15 +93,19 @@ diamond_data %>% select(price, depth) %>% mutate(Ratio = price/depth)
 ```
 
 
+
 ## Functionality #4 - select
 select() is used to take a subset of a data frame by columns.
-Below we use this function to take a subset of only included values clarity and depth. The rest of the uneeded variables con be removed
+Below we use this function to take a subset of only included values clarity and depth. The rest of the **unneeded**  variables **can** be removed
 ```{r}
 diamond_data <- select(diamond_data, -X1, -z, -color, -cut, -carat, -price)
 
 diamond_data
 
 ```
+
+I did not know that simply adding - to a column name in the select() function, deletes the column in the dataframe. (Shana Green)
+
 
 
 ## Functionality #5 - Visualization - ggplot
@@ -111,9 +117,11 @@ Below we use this function to see the amount correlation between clarity variabl
 # Basic barplot
 ggplot(diamond_data) +
   geom_point(aes(clarity, depth))
-  
+
+# Complex barplot  
+ggplot(diamond_data, aes(x=carat, y=price, color=clarity, shape=cut)) + geom_point()
    
 
 ```
-
+I noticed that your barplot needed some color. Instead of factoring in the clarity and depth, I focused on the carat weight versus the price. In addition to this, I changed the shape of the variables to indicate the cut quality. (Shana Green)
 

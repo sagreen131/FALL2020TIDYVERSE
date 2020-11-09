@@ -81,3 +81,5 @@ Analysis of Diamond clarity and depth correlation/frequency as well as ratio [pe
 Change Log:
 26 October: Added vignette w/ examples for purrr and forcats, Cameron Smith
 
+=======
+Shana Green made changes to John Mazon's tidyverse_johnmazon.rmd file. Corrected typos and added an additional ggplot visualization.
